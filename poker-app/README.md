@@ -1,3 +1,5 @@
+# Poker by Sheep
+
 # Description:
 A (draw) poker game where users play against a bot and bet fake currency.
 
@@ -14,3 +16,5 @@ A (draw) poker game where users play against a bot and bet fake currency.
 # Launch Codes:
 - Ensure current terminal PATH is correctly routed to `sheep/app` if not, route to `app` using command: `cd (Directory you installed our repo into)/sheep/app` 
 - Run command: `python3 __init__.py` or `python __init__.py`
+
+
