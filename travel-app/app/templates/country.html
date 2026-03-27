@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<!--
+  Snorelacks' Traveling Itinerary Website // Snorelacks
+  Roster: Yu L, Ricky L, Andrew T, Mustafa A
+  SoftDev
+
+  Based off: Gato BLog // Ninja Cats
+
+ -->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snorelacks - {{ country_data['country'][0]['name']['common'] }}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/app.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md">
+      {% for message in messages %}
+        <div class="flash-container text-white px-6 py-3 rounded-lg shadow-lg mb-2 text-center">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+{% endblock %}
+
+<body class="bg-black text-white min-h-screen" style = "user-drag: none;">
+
+  <div class="fixed inset-0 z-0">
+      <div class="absolute inset-0 bg-black/80 z-10"></div>
+      <img src="/static/images/homepage_Bg.jpg" alt="Background" class="w-full h-full object-cover opacity-40">
+  </div>
+
+  <div class="relative flex flex-col min-h-screen">
+
+    <!--Nav bar-->
+    <nav class="border-b border-white/10 bg-black/50 backdrop-blur-md w-full sticky top-0 z-50">
+      <div class="container mx-auto px-6 py-4 flex items-center">
+
+        <div class="flex-1 flex justify-start">
+          <a href="/" class="text-2xl font-bold flex items-center gap-2 hover:text-blue-400 transition">
+          <img src="/static/images/flag.jpg" class="w-10 rounded-full"> <span><span class="text-blue-500">Snore</span>lacks Traveling iternatry</span>
+          </a>
+        </div>
+
+        {% if country_data and country_data.get('region_display') %}
+          <div class="hidden md:flex justify-center">
+            <span class="text-[2.5rem] font-bold tracking-[0.3em] uppercase px-4 {{ country_data['font_group'] }}">
+              {{ country_data['region_display'] }} </span>
+          </div>
+        {% endif %}
+
+        <div class="flex-1 flex justify-end gap-6 text-sm font-semibold">
+        {% if logged_in %}
+        <!-- add javascript to add favorite button to call favorite list function -->
+          <a href="{{ url_for('profile') }}" class="flex items-center text-blue-500 transition-transform hover:translate-y-[-4px] text-blue-300 border border-blue-500/30 px-4 py-3 bg-blue-300/10">Profile</a>
+          <a href="{{ url_for('logout') }}" class="flex items-center text-white-700 transition-transform hover:translate-y-[-4px] text-red-400 border border-red-500/30 px-4 py-3 bg-red-300/10">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="flex items-center text-white-700 transition-transform hover:translate-y-[-4px] text-blue-300 border border-white-500/30 px-4 py-3 bg-white-300/10">Login</a>
+        {% endif %}
+      </div>
+      </div>
+    </nav>
+
+    {% if country_data and country_data.get('country') and country_data['country'][0] %}
+      {% set c = country_data['country'][0] %}
+      {% set s = country_data['summary'] %}
+
+      <!-- THis is the title section. -->
+      <section class="w-full min-h-[85vh] flex flex-col justify-center items-center py-20 border-b border-black relative overflow-hidden bg-cover bg-center" style="background-image: url('{{ country_data.get('capital_image') or s['thumbnail']['source'] or '' }}');">
+        <div class="absolute inset-0 bg-black/30 backdrop-blur-[2px]"></div>
+
+          <div class="container mx-auto px-6 flex flex-col items-center relative z-10">
+            <div class="relative mb-24 w-full max-w-6xl text-center">
+                <h1 class="text-6xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 tracking-tighter uppercase leading-none break-words drop-shadow-2xl">
+                  {{ c['name']['common'] }}
+                  {% if logged_in %}
+                  <button id="favoriteBtn" class="focus:outline-none transform transition hover:scale-105 hover:translate-y-[-4px] active:scale-95">
+                    <i id="starIcon" class="fa-regular fa-star text-5xl text-white transition-colors duration-300"></i>
+                  </button>
+                  {% endif %}
+                </h1>
+
+                <div class="flex flex-col items-end mt-4 mr-4 md:mr-10">
+                  <p class="text-xl md:text-2xl font-light tracking-widest uppercase text-right mt-4">{{ c['name']['official'] }}</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-black/50 gap-6 text-center p-8 shadow-2xl">
+              <div class="flex flex-col gap-1">
+                <h3 class="text-blue-400 text-xs font-bold uppercase tracking-[0.2em]">Capital</h3>
+                <p class="text-xl font-medium text-gray-100">{{ c['capital'][0] }}</p>
+              </div>
+              <div class="w-12 h-px bg-white/20 mx-auto"></div>
+              <div class="flex flex-col gap-1">
+                <h3 class="text-blue-400 text-xs font-bold uppercase tracking-[0.2em]">Population</h3>
+                <p class="text-xl font-medium text-gray-100">{{ "{:,}".format(c['population']) }}</p>
+              </div>
+              <div class="w-12 h-px bg-white/20 mx-auto"></div>
+              <div class="flex flex-col gap-1">
+                <h3 class="text-blue-400 text-xs font-bold uppercase tracking-[0.2em]">Currency</h3>
+                <p class="text-xl font-medium text-gray-100">
+                  {% for code, details in c['currencies'].items() %}
+                  {{ code }}
+                  {% endfor %}
+                </p>
+              </div>
+            </div>
+          </div>
+      </section>
+    {% else %}
+    <div class="flex items-center justify-center bg-black text-white">
+        <h1 class="text-4xl">Country Data Unavailable</h1>
+    </div>
+    {% endif %}
+
+    <!-- weather bg images changes based on most recent weather prediction-->
+    {% if country_data and country_data.get('weather') and country_data['weather'].get('list') %}
+      {% set first_w = country_data['weather']['list'][0] %}
+      {% set cond = first_w['weather'][0]['main'] %}
+      {% set bg_img = 'Clouds.jpg' %}
+      {% if cond == 'Clear' %}{% set bg_img = 'Clear.jpg' %}
+      {% elif cond == 'Rain' %}{% set bg_img = 'Rain.jpg' %}
+      {% elif cond == 'Clouds' %}{% set bg_img = 'Cloudy.jpg' %}
+      {% elif cond == 'Drizzle' %}{% set bg_img = 'Rain.jpg' %}
+      {% elif cond == 'Thunderstorm' %}{% set bg_img = 'Thunderstorm.jpg' %}
+      {% elif cond == 'Snow' %}{% set bg_img = 'Snow.jpg' %}
+      {% endif %}
+
+
+      <!-- weather -->
+      <section class="w-full py-24 border-b border-black relative bg-cover bg-center bg-no-repeat" style="background-image: url('/static/images/{{ bg_img }}');">
+
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-[4px]"></div>
+        <div class="container mx-auto px-6 relative z-10">   
+          <div class="bg-black/20 backdrop-blur-xl border border-white/10 p-8 md:p-12 shadow-2xl rounded-xl">
+
+            <div class="flex flex-col md:flex-row items-end justify-between mb-10">
+              <div>
+                <h2 class="text-6xl font-bold mb-2 text-white drop-shadow-md">Weather</h2>
+                <p class="text-white/80 font-large">Current weather conditions in {{ c['capital'][0] }}</p>
+              </div>
+              <div class="text-right">
+                <div class="flex items-baseline justify-end gap-2">
+                  <span class="text-7xl font-black text-white drop-shadow-md">
+                    {{ first_w['main']['temp']|round|int }}°C
+                  </span>
+                  <span class="text-4xl font-bold text-white/50">
+                    {{ (first_w['main']['temp'] * 1.8 + 32)|round|int }}°F
+                  </span>
+                </div>
+                <span class="text-2xl text-blue-200 ml-2 block">{{ first_w['weather'][0]['description']|title }}</span>
+              </div>
+            </div>
+
+            <div class="w-full overflow-x-auto flex flex-nowrap gap-6 pb-4 touch-pan-x mb-8">
+              {% for w in country_data['weather']['list'] %}
+
+              {% set date_str = w['dt_txt'][5:10].replace('-', '/') %}
+              {% set hour_str = w['dt_txt'][11:13] %}
+              {% set hour_int = hour_str | int %}
+              {% set minute_str = w['dt_txt'][14:16] %}
+
+              {% set ampm = 'AM' %}
+              {% if hour_int >= 12 %}{% set ampm = 'PM' %}{% endif %}
+              {% if hour_int > 12 %}{% set hour_int = hour_int - 12 %}{% endif %}
+              {% if hour_int == 0 %}{% set hour_int = 12 %}{% endif %}
+
+              <div class="flex-none w-36 flex flex-col items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition backdrop-blur-sm group">
+                <span class="text-sm text-gray-300 mb-2 text-center group-hover:text-white transition">
+                  {{ date_str }} <br>
+                  <span class="text-xs opacity-60">{{ hour_int }}:{{ minute_str }} {{ ampm }}</span>
+                </span>
+
+                <img src="http://openweathermap.org/img/w/{{ w['weather'][0]['icon'] }}.png" class="w-14 h-14 my-2 drop-shadow group-hover:scale-110 transition">
+
+                <div class="text-center">
+                  <span class="text-2xl font-bold group-hover:text-white-300 transition block">
+                    {{ w['main']['temp']|round|int }}°C
+                  </span>
+                  <span class="text-sm text-blue-200/70 block">
+                    {{ (w['main']['temp'] * 1.8 + 32)|round|int }}°F
+                  </span>
+                </div>
+
+                <span class="text-[10px] text-blue-200 mt-2 capitalize">{{ w['weather'][0]['main'] }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="w-full h-px bg-white/10 my-16"></div>
+
+            {% if country_data.get('places') and country_data['places'].get('features') %}
+              <div class="mb-12 text-center">
+                <h2 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-300 uppercase tracking-tighter mb-4">
+                  Things to Explore
+                </h2>
+                <p class="text-blue-200 font-light tracking-widest uppercase">
+                  near {{ c['capital'][0] }}
+                </p>
+              </div>
+
+              <div class=" mx-auto h-[600px] overflow-y-auto bg-black/70 border border-white/10 p-6 md:p-8">
+                <div class="flex flex-col gap-4">
+                  
+                  {% for place in country_data['places']['features'] %}
+                  {% set props = place['properties'] %}
+                  {% set address = props.get('address_line2') or props.get('formatted') or props.get('name') %}
+                  
+                  <a href="https://www.google.com/maps/search/{{ address }}" target="" class="relative w-full transition-all duration-300 group hover:border-blue-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4 block text-left rounded-xl">
+                    <div class="flex-1">
+                      <h3 class="text-lg font-bold text-white leading-tight mb-1 group-hover:text-blue-400 transition-colors">
+                        {{ props.get('name') or "Unnamed Location" }}
+                      </h3>
+                      <p class="text-sm text-gray-400 font-light">
+                        {{ address }}
+                      </p>
+                    </div>
+                  </a>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+          </div> 
+        </div> 
+      </section>
+    {% else %}
+    <div class="bg-gray-900 text-gray-500 text-center py-4">
+      Weather service is currently offline.
+    </div>
+    {% endif %}
+
+    <!-- wiki-->
+    <section class="w-full py-24 bg-black/10 relative" style="background-image: url('{{ country_data.get('capital_image') or s['thumbnail']['source'] or '' }}');">
+      <div class="absolute inset-0 backdrop-blur-sm"></div>
+      <div class="container mx-auto relative z-10">
+
+      <div class="bg-black/80 py-12 px-12 md:px-24 rounded-lg shadow-2xl relative border border-blue/10">
+        
+        <input type="radio" name="slider" id="slide-0" class="wiki-radio hidden" checked>
+        {% if wiki_data %}
+          {% for section in wiki_data %}
+            <input type="radio" name="slider" id="slide-{{ loop.index }}" class="wiki-radio hidden">
+          {% endfor %}
+        {% endif %}
+        
+        <div class="wiki-content slide-0 hidden">
+          <div class="flex items-center gap-6 mb-8 border-b border-blue-500 pb-4">
+            <h2 class="text-4xl font-bold text-white">About {{ c['name']['common'] }}</h2>
+            <img src="{{ c['flags']['svg'] }}" alt="Flag" class="h-16 md:h-20 w-auto transition-transform duration-300 hover:rotate-6 origin-bottom-left select-none"> <!-- funny rotate hehe-->
+          </div>
+
+          <div class="prose prose-invert prose-lg text-white-300 h-[350px] overflow-y-auto">
+            {{ s['extract_html'] | safe }}
+          </div>
+
+          <div>
+            {% if s.get('content_urls') %} <!-- safety check for bluescreen-->
+            <a href="{{ s['content_urls']['desktop']['page'] }}" target="_blank" class="inline-flex items-center gap-2 text-blue-400 hover:text-white transition">
+              <span>More on wikipedia</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+            </a>
+            {% else %}
+            <a href="https://en.wikipedia.org/wiki/{{ c['name']['common'] }}" target="_blank" class="inline-flex items-center gap-2 text-blue-400 hover:text-white transition">
+              <span>Search on Wikipedia</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+            </a>
+            {% endif %}
+          </div>
+
+          <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 pointer-events-none">
+            <label for="slide-{{ wiki_data|length }}" class="pointer-events-auto cursor-pointer text-white/20 hover:text-blue-500 p-4">
+              <i class="fa-solid fa-chevron-left text-6xl"></i>
+            </label>
+            <label for="slide-1" class="pointer-events-auto cursor-pointer text-white/20 hover:text-blue-500 p-4">
+              <i class="fa-solid fa-chevron-right text-6xl"></i>
+            </label>
+          </div>
+
+        </div>
+
+
+        {% if wiki_data %}
+          {% for section_name, content_dict in wiki_data.items() %}
+            {% set current_idx = loop.index %}
+            {% set total_len = loop.length %}
+            
+            {% set prev_id = current_idx - 1 %}
+            {% set next_id = current_idx + 1 %}
+            {% if current_idx == total_len %}{% set next_id = 0 %}{% endif %}
+
+            <div class="wiki-content slide-{{ current_idx }} hidden animate-fade-in">
+                
+              <div class="flex items-center gap-6 mb-8 border-b border-blue-500 pb-4">
+                <h2 class="text-4xl font-bold text-white">{{ section_name }}</h2>
+                <img src="{{ c['flags']['svg'] }}" alt="Flag" class="h-16 md:h-20 w-auto shadow-xl transition-transform duration-300 hover:rotate-6 origin-bottom-left select-none">
+              </div>
+
+              <div class="prose prose-invert prose-lg text-white-300 leading-relaxed h-[700px] overflow-y-auto pr-2 custom-scrollbar">
+                {% if content_dict is mapping %}
+                  {% for heading, text in content_dict.items() %}
+                    <div class="mb-6">
+                      <h3 class="text-xl text-blue-300 mb-1">{{ heading }}</h3>
+                      <p>{{ text }}</p>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="flex flex-col items-center justify-center h-full text-white-300">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl mb-2"></i>
+                    <p>Content unavailable for this subsection.. ;-; </p>
+                  </div>
+                {% endif %}
+              </div>
+
+            <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 pointer-events-none">
+                <label for="slide-{{ prev_id }}" class="pointer-events-auto cursor-pointer text-white/20 hover:text-blue-500">
+                <i class="fa-solid fa-chevron-left text-3xl"></i>
+                </label>
+                <label for="slide-{{ next_id }}" class="pointer-events-auto cursor-pointer text-white/20 hover:text-blue-500 ">
+                <i class="fa-solid fa-chevron-right text-3xl"></i>
+                </label>
+            </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      
+      <div class="mt-12 pt-10 mx-auto border-t border-white/10 text-center">
+        <a href="/" class="text-white-500 hover:text-blue-500 bg-black transition px-6 py-3 border border-white/10 ">
+          <i class="fa-solid fa-arrow-left mr-2"></i> Back to homepage
+        </a>
+        <div class="flex flex-col items-end">
+          <div class="flex items-center gap-3">
+            <a href="{{ url_for('refresh_country', country_name=c['name']['common']) }}" class="text-black-400/50 hover:text-black-400 transition-all hover:rotate-180 duration-500" title="Refresh Data">
+              <i class="fa-solid fa-arrows-rotate text-xl"></i>
+            </a>
+            <p class="text-xl">
+              {{ c['name']['official'] }}
+            </p>
+          </div>
+          <p class="text-[30px] text-white/30 uppercase mt-2">
+            Last Synced: {{ country_data_timestamp if country_data_timestamp else "Just Now" }}
+          </p>
+        </div>
+      </div>
+      </div>
+    </section>
+    <style>
+        #slide-0:checked ~ .slide-0 { display: block; }
+
+        {% if wiki_data %}
+            {% for section in wiki_data %}
+                #slide-{{ loop.index }}:checked ~ .slide-{{ loop.index }} { display: block; }
+            {% endfor %}
+        {% endif %}
+    </style>
+  </div>
+</body>
+</html>

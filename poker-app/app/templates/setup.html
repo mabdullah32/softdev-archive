@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheep Poker - Game Setup</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/app.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="h-screen overflow-hidden text-white relative">
+    
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-black/60 z-10"></div>
+        <img src="../static/image/menu_bcg.jpg" alt="Poker Table Background" class="w-full h-full object-cover">
+    </div>
+    
+    <div class="relative z-20 h-full flex flex-col justify-center items-center px-4">
+        
+        <div class="bg-black backdrop-blur-xl border border-white/10 p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-2xl">
+            
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold tracking-wider">
+                    <span class="text-green-400">GAME</span> <span class="text-red-400">SETUP</span>
+                </h1>
+                <p class="text-blue-200/60 mt-2 text-xs uppercase tracking-widest">Configure Poker Game</p>
+            </div>
+            
+            <form action="/game" method="POST" class="flex flex-col gap-6">
+                
+                <div class="flex flex-col gap-2 hidden">
+                    <label class="text-xs text-green-300 uppercase ml-1 flex items-center gap-2">
+                        <i class="fa-solid fa-coins"></i>
+                        Starting Currency
+                    </label>
+                    <select name="starting_balance" 
+                            class="w-full text-black p-3 rounded-xl bg-white/90 focus:bg-white transition-all"
+                            required>
+                        <option value="1000">$1,000</option>
+                        <option value="5000" selected>$5,000</option>
+                        <option value="10000">$10,000</option>
+                        <option value="25000">$25,000</option>
+                        <option value="50000">$50,000</option>
+                    </select>
+                    <p class="text-xs text-gray-400 ml-1">Starting balance for all players</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs text-green-300 uppercase ml-1 flex items-center gap-2">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                        Minimum Bet
+                    </label>
+                    <select name="min_bet" 
+                            class="w-full text-black p-3 rounded-xl bg-white/90 focus:bg-white transition-all"
+                            required>
+                        <option value="10">$10</option>
+                        <option value="25">$25</option>
+                        <option value="50" selected>$50</option>
+                        <option value="100">$100</option>
+                        <option value="250">$250</option>
+                        <option value="500">$500</option>
+                    </select>
+                    <p class="text-xs text-gray-400 ml-1">Minimum bet</p>
+                </div>
+
+                <div class="bg-blue-500/10 border border-blue-400/30 rounded-xl p-4">
+                    <h3 class="text-blue-300 font-bold mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Game Rules
+                    </h3>
+                    <ul class="text-sm text-gray-300 space-y-1">
+                        <li>• Players can choose to bet as much as they want </li>
+                        <li>• Leaving the room will add your earnings to your account balance</li>
+                        <li>• The minimum cost to play a hand is the minimum bet</li>
+                    </ul>
+                </div>
+
+                <div class="flex gap-4 mt-4">
+                    <button type="submit" 
+                            class="flex-1 btn-primary py-4 rounded-xl text-lg tracking-widest font-bold hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-play mr-2"></i>
+                        Start Game
+                    </button>
+                    
+                    <a href="/" 
+                       class="flex-1 bg-gray-700/50 hover:bg-gray-600/50 text-white py-4 rounded-xl text-lg tracking-widest font-bold text-center transition-colors">
+                        <i class="fa-solid fa-times mr-2"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+            
+            <div class="text-center mt-6 pt-6 border-t border-white/10">
+                <a href="./" 
+                   class="text-gray-400 hover:text-white transition-colors flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    Back to Homepage
+                </a>
+            </div>
+            
+        </div>
+        
+    </div>
+    
+</body>
+</html>

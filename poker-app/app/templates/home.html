@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheep Poker - Home</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/app.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="h-screen overflow-hidden text-white relative">
+
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-black/70 z-10"></div>
+        <img src="../static/image/home_bcg1.jpg" alt="Poker Background" class="w-full h-full object-cover">
+    </div>
+
+    <div class="relative z-20 h-full flex flex-col">
+
+        <nav class="bg-black/40 backdrop-blur-sm border-b border-white/10">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="text-2xl font-bold">
+                    <span class="text-green-400">SHEEP</span>
+                    <span class="text-red-400">POKER</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    {% if logged_in %}
+                        <span class="text-gray-300">
+                            {{ current_user }}
+                            ${{ currency }}
+                        </span>
+                        <a href="./logout"
+                           class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg transition-colors">
+                            Logout
+                        </a>
+                    {% else %}
+                        <a href="./login.html"
+                           class="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg transition-colors">
+                            Login
+                        </a>
+                        <a href="./create_account.html"
+                           class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors">
+                            Register
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <div class="flex-1 flex flex-col justify-center items-center px-4">
+
+            <div class="text-center mb-12">
+                <h1 class="text-6xl md:text-8xl font-bold mb-4 tracking-wider">
+                    <span class="text-green-400">SHEEP</span>
+                    <br>
+                    <span class="text-red-400">POKER</span>
+                </h1>
+            </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
+
+                    <a href="./setup.html"
+                       class="bg-black/60 backdrop-blur-md border-2 border-green-400/50 hover:border-green-400 rounded-2xl p-8 transition-all hover:scale-105 hover:shadow-2xl group">
+                        <div class="text-center">
+                            <div class="text-6xl mb-4 text-green-400 group-hover:scale-110 transition-transform">
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2 text-green-300">Play Poker</h2>
+                            <p class="text-gray-400">Start a new game</p>
+                        </div>
+                    </a>
+
+                    <form action = "/update_currency_bailout" method= "POST">
+                      <input type = "hidden" name="currency" class='w-0' value=1000>
+                    <button type="submit"
+                       class="bg-black/60 backdrop-blur-md border-2 border-yellow-400/50 hover:border-yellow-400 rounded-2xl p-8 transition-all hover:scale-105 hover:shadow-2xl group">
+                        <div class="text-center">
+                            <div class="text-6xl mb-4 text-yellow-400 group-hover:scale-110 transition-transform">
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2 text-yellow-300">Bailout</h2>
+                            <p class="text-gray-400">Receive up to 1000 cash</p>
+                        </div>
+                    </button>
+                  </form>
+
+                </div>
+
+                <div class="mt-12 bg-black/40 backdrop-blur-sm border border-white/10 rounded-xl p-6 max-w-2xl">
+                    <h3 class="text-xl font-bold text-center mb-4 text-blue-300">
+                        How to Play
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm">
+                        <div>
+                            <div class="text-3xl mb-2">1️</div>
+                            <p class="text-gray-300">Draw cards decide which cards to redraw </p>
+                        </div>
+                        <div>
+                            <div class="text-3xl mb-2">2️</div>
+                            <p class="text-gray-300">Bet however much money you want to bet. </p>
+                        </div>
+                        <div>
+                            <div class="text-3xl mb-2">3️</div>
+                            <p class="text-gray-300">Redraw your cards and make your hand!</p>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+
+
+    </div>
+
+</body>
+</html>

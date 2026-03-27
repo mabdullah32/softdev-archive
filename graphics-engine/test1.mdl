@@ -1,0 +1,48 @@
+frames 60
+basename test1
+
+constants shiny_red 0.2 0.2 0.2 0.6 0.2 0.2 0.8 0.8 0.8
+constants shiny_blue 0.2 0.2 0.2 0.2 0.2 0.6 0.8 0.8 0.8
+constants shiny_green 0.2 0.2 0.2 0.2 0.6 0.2 0.8 0.8 0.8
+constants shiny_purple 0.2 0.2 0.2 0.5 0.2 0.5 0.8 0.8 0.8
+
+ambient 40 40 40
+
+light l1 0.5 0.75 1.0 255 200 200
+light l2 -0.5 0.75 1.0 200 255 200
+light l3 0.0 -0.5 0.5 200 200 255
+
+shading phong
+
+push
+
+move 125 375 0
+
+rotate y 360 spin_tl
+rotate x 20 wobble_tl
+
+cone shiny_red 0 0 0 40 80
+pop
+
+push
+move 375 125 0
+
+rotate y -360 spin_br
+rotate x -20 wobble_br
+  
+cone shiny_blue 0 0 0 40 80
+pop
+
+
+
+
+
+
+vary spin_tl 0 59 0 2 exponential 1.8
+vary wobble_tl 0 29 0 1 linear
+vary wobble_tl 30 59 1 0 exponential
+
+vary spin_br 0 59 0 2 linear
+vary wobble_br 0 29 0 1 exponential
+vary wobble_br 30 59 1 0 linear
+

@@ -1,0 +1,59 @@
+frames 60
+basename spinning_cones
+
+ambient 40 40 40
+shading phong
+
+constants red_c   0.2 0.1 0.1   0.6 0.1 0.1   0.8 0.8 0.8
+constants blue_c  0.1 0.1 0.2   0.1 0.1 0.6   0.8 0.8 0.8
+constants green_c 0.1 0.2 0.1   0.1 0.6 0.1   0.8 0.8 0.8
+constants orange_c 0.2 0.15 0.05  0.6 0.3 0.1  0.8 0.8 0.8
+
+light l1 1 1 1 255 0 0
+light l2 -1 1 1 0 0 255
+light l3 1 -1 1 255 140 0
+light l4 -1 -1 1 0 255 0
+
+push
+move 125 375 0
+rotate y 360 spin_tl
+rotate x 20 wobble_tl
+cone red_c 0 0 0 40 80
+pop
+
+push
+move 375 375 0
+rotate y -360 spin_tr
+rotate x 20 wobble_tr
+cone blue_c 0 0 0 40 80 
+pop
+
+push
+move 125 125 0
+rotate y 360 spin_bl
+rotate x 20 wobble_bl
+cone green_c 0 0 0 40 80 
+pop
+
+push
+move 375 125 0
+rotate y -360 spin_br
+rotate x -20 wobble_br
+cone orange_c 0 0 0 40 80 
+pop
+
+vary spin_tl 0 59 0 2 exponential 1.8
+vary wobble_tl 0 29 0 1 linear
+vary wobble_tl 30 59 1 0 exponential
+
+vary spin_br 0 59 0 2 exponential
+vary wobble_br 0 29 0 1 linear
+vary wobble_br 30 59 1 0 exponential
+
+vary spin_tr 0 59 0 2 exponential 1.8
+vary wobble_tr 0 29 0 1 linear
+vary wobble_tr 30 59 1 0 exponential
+
+vary spin_bl 0 59 0 2 exponential 1.8
+vary wobble_bl 0 29 0 1 linear
+vary wobble_bl 30 59 1 0 exponential

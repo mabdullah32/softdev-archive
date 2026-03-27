@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Game</title>
+  </head>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <body class="min-h-screen text-white relative">
+
+    <div class="absolute inset-0 z-0">
+      <div class="absolute inset-0 bg-black/70 bg-repeat z-15"></div>
+      <img id="background" src="../static/image/game_bcg.png" alt="Poker Background" class="w-full h-full">
+    </div>
+
+    <script src = "../static/js/game.js"></script>
+
+    <div class="relative grid grid-cols-1 justify-self-start">
+
+      <div class="col-span-full">
+        <form action = "/update_currency" method="POST">
+          <input type="hidden" name="currency" id="currency_form" value=0>
+          <button type="SUBMIT">LEAVE</button>
+        </form>
+        <!-- <button id="state_restart">Reroll</button> -->
+      </div>
+
+      <div id='table_with_cards' class="col-span-full position: relative py-3">
+        <div id="poker_table" class="w-full"></div>
+        <div id ="bot_cards" class="flex flex-wrap flex-row justify-center position: absolute top-0"></div>
+        <div id ="player_cards" class="flex flex-wrap justify-center position: absolute bottom-0"></div>
+      </div>
+
+
+      <div id = "player_redraws" class = 'flex flex-wrap flex-row justify-center col-span-full'>
+        <button id="redraw1" value=1 class="text-green-500 w-1/6">Select Card 1</button><br>
+        <button id="redraw2" value=2 class="text-green-500 w-1/6">Select Card 2</button><br>
+        <button id="redraw3" value=3 class="text-green-500 w-1/6">Select Card 3</button><br>
+        <button id="redraw4" value=4 class="text-green-500 w-1/6">Select Card 4</button><br>
+        <button id="redraw5" value=5 class="text-green-500 w-1/6">Select Card 5</button><br>
+      </div>
+
+      <div id="buttons">
+        <button id="redraw_all_cards" class="">Redraw Selected</button><br>
+        <button id="cont">Continue</button>
+        <p id="cont_game" class="hidden"></p>
+
+        <div>
+          <!-- <button id="money" value="1000">Current Balance: 1000</button> -->
+          <button id="money" value={{currency}}>Current Balance: {{currency}}</button>
+        </div>
+
+        <div>
+          <button id="call" class = "text-gray-500" value="call">Call</button><br>
+          <!-- <button id="fold">Fold</button> -->
+          <button id="raise" class = "text-gray-500" value="raise">Raise</button>
+          <input id="raiseamt" type = "range" min={{min_bet}} max={{currency}} class = "slider">
+          <p>Value: <span id = "raise_num"></span></p>
+        </div>
+      </div>
+
+    </div>
+
+
+    <script>
+
+      window.addEventListener("load",game_restart);
+
+      var raise_slider = document.getElementById("raiseamt");
+      var output = document.getElementById("raise_num");
+      raise_slider.oninput = function(){
+      //  // console.log(this.value);
+        output.innerHTML = this.value;
+      }
+
+      let deck = [];
+      let player_hand = [];
+      let bot_hand = [];
+      let redraws = [];
+
+      var money = document.getElementById("money").value;
+
+
+      var call = document.getElementById("call");
+      var raise = document.getElementById("raise");
+      call.addEventListener("click",modify_bet);
+      raise.addEventListener("click",modify_bet);
+
+
+      var redraw1 = document.getElementById("redraw1");
+      redraw1.addEventListener("click",player_redraw);
+      var redraw2 = document.getElementById("redraw2");
+      redraw2.addEventListener("click",player_redraw);
+      var redraw3 = document.getElementById("redraw3");
+      redraw3.addEventListener("click",player_redraw);
+      var redraw4 = document.getElementById("redraw4");
+      redraw4.addEventListener("click",player_redraw);
+      var redraw5 = document.getElementById("redraw5");
+      redraw5.addEventListener("click",player_redraw);
+
+      var redrawall = document.getElementById("redraw_all_cards");
+      redrawall.addEventListener("click", redraw_all);
+
+      var cont_game = document.getElementById("cont");
+      cont_game.addEventListener("click",restart_or_continue);
+
+
+
+
+      function modify_bet(event)
+      {
+        let bet_state = event.target.value;
+        if(bet_state == "call")
+        {
+          amt_bet = 50;
+          document.getElementById("call").className = "text-green-500";
+          document.getElementById("raise").className = "text-red-500";
+        }
+        if(bet_state == "raise")
+        {
+          document.getElementById("call").className = "text-red-500";
+          document.getElementById("raise").className = "text-green-500";
+          amt_bet = Number(document.getElementById("raiseamt").value);
+        }
+      }
+
+      function continue_game()
+      {
+
+        //print_2d(bot_hand);
+
+        //print_2d(player_hand);
+
+
+        let bot_in_state = [];
+        let bot_state = [];
+
+        let bot_state_info = get_hand_state(bot_hand, bot_in_state);
+        bot_state = bot_state_info[0];
+        bot_in_state = bot_state_info[1];
+
+        bot_redraw(bot_hand, bot_in_state, deck);
+        //print_2d(bot_hand);
+
+        bot_state_info = get_hand_state(bot_hand, bot_in_state);
+        bot_state = bot_state_info[0];
+        bot_in_state = bot_state_info[1];
+
+
+        let player_in_state = [];
+        let player_state = [];
+        let player_state_info = get_hand_state(player_hand, player_in_state);
+
+        player_state = player_state_info[0];
+        player_in_state = player_state_info[1];
+
+        let compare_val = compare_hands(player_hand, bot_hand, player_state, bot_state);
+
+        let player_cards = hand_to_imgs(player_hand, "player");
+        let bot_cards = hand_to_imgs(bot_hand, "player");
+        document.getElementById("player_cards").innerHTML = player_cards;
+        document.getElementById("bot_cards").innerHTML = bot_cards;
+
+        var amt_bet = Number(document.getElementById("raise_num").innerHTML)
+        var min_bet = Number('{{min_bet}}')
+        if(amt_bet < min_bet){
+          amt_bet = min_bet
+        }
+        // if(amt_bet > Number(document.getElementById("money").value)){
+        //   amt_bet = Number(document.getElementById("money").value)
+        // }
+
+        if(isNaN(Number(document.getElementById("currency_form").value)))
+        {
+          document.getElementById("currency_form").value = 0;
+        }
+
+        if(compare_val > 0){
+          alert("Player Won!");
+          document.getElementById("money").value = Number(document.getElementById("money").value) + amt_bet;
+          document.getElementById("money").innerHTML = "Current Balance: " + String(Number(document.getElementById("money").value));
+          document.getElementById("currency_form").value = Number(document.getElementById("currency_form").value) + amt_bet;
+        }
+        if(compare_val < 0){
+          alert("Bot Won!");
+          document.getElementById("money").value = Number(document.getElementById("money").value) - amt_bet;
+          document.getElementById("money").innerHTML = "Current Balance: " + String(Number(document.getElementById("money").value));
+          document.getElementById("currency_form").value = Number(document.getElementById("currency_form").value) - amt_bet;
+      }
+        if(compare_val == 0){alert("Nobody Won!");}
+      // console.log(document.getElementById("currency_form").value);
+
+        for(let i = 0; i < 5; i++)
+        {
+          document.getElementById("redraw" + (i + 1)).className = "text-green-500 w-1/6";
+        }
+
+        // console.log(Number(document.getElementById("money").value));
+        if(Number(document.getElementById("money").value) >= 1000)
+        {
+          document.getElementById("raiseamt").max = Number(document.getElementById("money").value );
+        }
+        else
+        {
+          document.getElementById("raiseamt").max = 1000;
+        }
+
+        document.getElementById("raise").className = "text-gray-500";
+        document.getElementById("call").className = "text-gray-500";
+        redraws = [];
+      }
+
+      function redraw_all()
+      {
+        redraws = redraws.sort();
+        if(redraws.length > 0)
+        {
+        for(let i = redraws.length - 1; i > -1; i--)
+        {
+          redraw(player_hand,deck,redraws[i]);
+        }
+
+        player_cards = hand_to_imgs(player_hand, "player");
+        document.getElementById("player_cards").innerHTML = player_cards;
+
+        for(let i = 0; i < 5; i++)
+        {
+          document.getElementById("redraw" + (i + 1)).className = "text-red-500 hidden";
+        }
+        }
+
+        redraws = [];
+      }
+
+      function player_redraw(event)
+      {
+        let button_class = document.getElementById("redraw" + event.target.value).className;
+        if(button_class == "text-green-500 w-1/6")
+        {
+          redraws.push(event.target.value - 1);
+          document.getElementById("redraw" + event.target.value).className = "text-red-500 w-1/6";
+        }
+        else if(button_class = "text-red-500 w-1/6")
+        {
+          redraws.splice(redraws.indexOf(event.target.value - 1),1);
+          document.getElementById("redraw" + event.target.value).className = "text-green-500 w-1/6";
+        }
+        // console.log(redraws);
+      }
+
+      function show_hand()
+      {
+        print_2d(player_hand);
+      }
+
+      function game_restart()
+      {
+        document.getElementById("raise").className = "text-gray-500";
+        document.getElementById("call").className = "text-gray-500";
+        for(let i = 0; i < 5; i++)
+        {
+          document.getElementById("redraw" + (i + 1)).className = "text-green-500 w-1/6";
+        }
+
+        deck = make_deck();
+        player_hand = draw_hand(deck);
+        print_2d(player_hand);
+        bot_hand = draw_hand(deck);
+
+        let player_cards = hand_to_imgs(player_hand, "player");
+        let bot_cards = hand_to_imgs(bot_hand, "bot");
+
+        document.getElementById("player_cards").innerHTML = player_cards;
+        document.getElementById("bot_cards").innerHTML = bot_cards;
+        document.getElementById("poker_table").innerHTML = '<img id="table_img" src="../static/image/poker table3.png">';
+      }
+
+      function restart_or_continue(){
+        if (document.getElementById("state_restart") != null){
+          // console.log("restart")
+          game_restart()
+          document.getElementById("state_restart").id = "cont_game"
+        }
+        else{
+          // console.log("cont")
+          continue_game()
+          document.getElementById("cont_game").id = "state_restart"
+        }
+      }
+
+
+
+    </script>
+
+
+
+
+
+    <!-- <svg id="svg" width="100%" height="100%" viewBox="0 0 1000 400" style="border:1px solid #000000;">
+      <use href="/static/image/poker table3.png"></use>
+    </svg> -->
+
+  </body>
+</html>
